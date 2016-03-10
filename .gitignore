@@ -1,5 +1,7 @@
-[^.]*
 .Rproj.user
+*.Rproj
 .Rhistory
 .RData
 .DS_Store
+/data/.gitignore
+/data/.gitignore.txt
