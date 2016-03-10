@@ -39,7 +39,9 @@ for (i in 1:num.files)
 {
   dir.file = paste(data.dir,dfFileInfo$dname[i],dfFileInfo$fname[i], sep="/")
   # create dataframe
-  myDF <- as.data.frame(readLines(file(dir.file, "rb")))
+  myCon <- file(dir.file, "rb")
+  myDF <- as.data.frame(readLines(myCon))
+  close(myCon)
   # modify dataframe
   names(myDF)[1] <- "text"
   myDF$text <- as.character(myDF$text)
