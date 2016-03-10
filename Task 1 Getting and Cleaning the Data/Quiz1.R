@@ -40,7 +40,7 @@ for (i in 1:num.files)
   dir.file = paste(data.dir,dfFileInfo$dname[i],dfFileInfo$fname[i], sep="/")
   # create dataframe
   myCon <- file(dir.file, "rb")
-  myDF <- as.data.frame(readLines(myCon))
+  myDF <- as.data.frame(readLines(myCon, n=dfFileInfo$nrows[i], skipNul=TRUE, warn=FALSE))
   close(myCon)
   # modify dataframe
   names(myDF)[1] <- "text"
@@ -51,7 +51,7 @@ for (i in 1:num.files)
 }
 
 #Housecleaning
-rm(myDF)
+rm(myCon, myDF)
 rm(dir.file)
 rm(file_list)
 rm(i)
