@@ -16,13 +16,15 @@ library(SnowballC)
 # Loading and preprocessing the data
 ############################################################
 
-# set wd to data/final dir - data source 
-setwd("/home/ericandbeethoven/R/DataScience-JohnsHopkins-Capstone/data/final")
+# set wd & data/final dir - data source 
+setwd("~/R/DataScience-JohnsHopkins-Capstone")
+data.dir = ("~/R/DataScience-JohnsHopkins-Capstone/data/final")
+
 
 # create dataframe 'dfFileInfo' with file information that will optimize reading large files  
 # file information from Linux 'wc' written to file.info in each EN, DE, FI, RU subdir
 # File Information: lines, wordcount, bytes, filename, dir name, df name when file read
-logs.dir = "/home/ericandbeethoven/R/DataScience-JohnsHopkins-Capstone/data/logs/"
+logs.dir = "~/R/DataScience-JohnsHopkins-Capstone/data/logs/"
 file_list <- list.files(logs.dir)
 dfFileInfo <- ldply(paste(logs.dir,file_list, sep=""), 
                     read.table, 
@@ -31,16 +33,11 @@ dfFileInfo <- ldply(paste(logs.dir,file_list, sep=""),
 dfFileInfo$MB = round(dfFileInfo$MB/10^6, 2)
 dfFileInfo$dname = strtrim(dfFileInfo$fname, 5)
 dfFileInfo$dfname = strtrim(dfFileInfo$fname, nchar(as.character(dfFileInfo$fname)) - 4)
-
-# Read tables using http://www.biostat.jhsph.edu/~rpeng/docs/R-large-tables.html
-
-# Read first 5 rows of ea. type of file (blog, news, twitter) to create a vector of classes
 num.files = nrow(dfFileInfo)
-# #num.rows = 5
 
 for (i in 1:num.files)
 {
-  dir.file = paste(getwd(),dfFileInfo$dname[i],dfFileInfo$fname[i], sep="/")
+  dir.file = paste(data.dir,dfFileInfo$dname[i],dfFileInfo$fname[i], sep="/")
   # create dataframe
   myDF <- as.data.frame(readLines(file(dir.file, "rb")))
   # modify dataframe
