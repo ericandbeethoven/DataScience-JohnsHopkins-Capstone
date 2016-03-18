@@ -1,0 +1,359 @@
+---
+title: "Swiftkey NLP Capstone Project - Milestone Report"
+author: "Eric Bruce"
+date: "March 14, 2016"
+output: html_document
+---
+
+## Synopsis
+
+The objective of this project is to develop a Shiny App Data Product that takes a phrase as input and generates output that predicts the next word. This is accomplished by using the Data Science area of Natural Language Processing (NLP) and Text Mining (TM) to build a Predictive Text Model in R.
+
+This Milestone Report discusses progress in and findings from the following completed tasks:
+
+<ul>
+<li> Task 0 - Understanding the Problem</li>
+<li> Task 1 - Data Acquisition, Cleaning and Tokenization</li>
+<li> Task 2 - Exploratory Data Analysis</li>
+</ul>
+
+The R code used for this report is included in the appendix.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Task 0 - Understanding the Problem
+
+There are two goals for this task:
+
+<ul>
+<li> Obtain the Capstone Project Dataset</li>
+<li> Familiarize yourself with background</li>
+</ul>
+
+### Obtain the Capstone Project Dataset
+
+The [Capstone Dataset](https://d396qusza40orc.cloudfront.net/dsscapstone/dataset/Coursera-SwiftKey.zip) is obtained.
+
+The dataset was collected from publically available sources (news, personal blog, twitter). It contains a single column consisting of the text phrases contained in each source document entry (news article, blog post, tweet). The dataset has several languages (EN, DE, FI, RU). This project will only use the EN language data.
+
+The file was downloaded, unzipped and a datasets were built.
+
+### Familiarize yourself with background
+
+Modern NLP is based on machine learning. A Predictive Model is learned via TM analysis of a sufficiently large corpora (set of real-world documents). In this case the Predictive Model application is to output the next word given a phrase as input.
+
+Some common NLP steps for the project are:
+
+<ul>
+<li> Understand the application (eg Information Retrieval, Spell Check, Text Classification, Sentiment Analysis)</li>
+<li> Obtain suitable corpora</li>
+<li> Determine vocabulary of phrases (Tokenization, Dropping undesired or sparse terms, Normalization, Stemming) </li>
+<li> N-gram Exploration and Language modeling</li>
+<li> Machine Learning Predictive Model</li>
+</ul>
+
+Some common NLP issues include:
+
+<ul>
+<li> Language nuances (eg No word separation in Mandarin, Different Japanese character sets, Non segmented German nouns)</li>
+<li> Apostrophe handing (eg Finland, Finlands, Finland's)</li>
+<li> Dash handling (eg Hewlett-Packard, state-of-the-art)</li>
+<li> Whitespace handling (eg San Francisco 1 token or 2 tokens)</li>
+<li> End of Sentence and Period handling (eg m.p.h., PhD., See Bob run.)</li>
+</ul>
+
+This NLP project applies many of the same concepts already learned in this Specialization. These concepts include getting and cleaning data, exploratory data analysis, reproducible research, statistical inference, prediction and machine learning and developing a data product.
+
+## Task 1 - Data Acquisition, Cleaning and Tokenization
+
+There are two goals for this task:
+
+<ul>
+<li> Loading an Appropriate Data Sample</li>
+<li> Tokenization & Profanity filtering</li>
+</ul>
+
+### Loading an Appropriate Data Sample
+
+A basic summary analysis of the EN news, blog and twitter txt files is done. A dataframe 'FileInfo' contains Basic Data Content (eg Blog, News, Twitter), File Size, Line Counts and  Word counts.
+
+<b> Review Criteria 2 - Has the data scientist done basic summaries of the three files? Word counts, line counts and basic data tables?</b>
+
+```{r messages=FALSE, warning = FALSE, cache=TRUE}
+load("~/R/DataScience-JohnsHopkins-Capstone/data/MilestoneComplete.RData")
+FileInfo 
+```
+
+These files are fairly large. It is likely computationally expensive to load the entire dataset but not necessary to illustrate features of the data or build a useful predictive model. A 5% random sample of lines from each file will be loaded instead.
+
+### Tokenization & Profanity Filtering
+
+Tokenization is a required pre-processing NLP step. It breaks up our text samples into units suitable for NLP called tokens. It resolves the common NLP issues previously discussed. An additional step of profanity filtering using a [list of profane words](http://www.cs.cmu.edu/~biglou/resources/bad-words.txt) was performed. 
+
+Lastly, note that 2 common pre-processing NLP steps of removing English stop words (I, me, we, you, etc) and stemming (word -> root) do not need to be performed for our stated objective. It was decided that they were not applicable to our objective; predicting next word given an input phrase. Since we did not remove stopwords, an input phrase of "I love" could predict the next word to be "you." If the stop words were removed the predicted next word might be "very". That doesn't make sense.
+
+## Task 2 - Exploratory Data Analysis
+
+### Data Staging
+
+The data is first staged and then transformed into n-grams. The Top 30 most frequent tokens (words, phrases) are chosen for exploratory data analysis. 
+
+### Token Frequency Exploration
+
+<b> Review Criteria 3 - Has the data scientist made basic plots, such as histograms to illustrate features of the data? </b>
+
+Basic plots are shown to illustrate features of the data. There are a lot of tokens, so for now, just check out some of the Top 30 most frequently occurring tokens for 1-gram, 2-gram and 3-gram.
+
+#### Histogram Plot for nGrams = 1
+
+```{r messages=FALSE, warning = FALSE, echo=FALSE, cache=TRUE}
+library(ggplot2, warn.conflicts = FALSE, quietly=TRUE)
+# Top 30 Unigrams
+library(ggplot2, warn.conflicts = FALSE, quietly=TRUE)
+Freq.df <- head(data.frame(Words=names(UniGram.sorted), Frequency = UniGram.sorted), 30)
+p1 = ggplot(Freq.df, aes(x=reorder(Words, Frequency), y=Frequency)) + geom_bar(stat="identity") + coord_flip()
+# Add plot title & labels
+p1 = p1 + ggtitle("Top 30 Tokens - nGrams = 1") + 
+  xlab("") +
+  ylab("Token Frequency")
+# White background and black grid lines
+p1 <- p1 + theme_bw()
+print(p1)  
+```
+
+#### Histogram Plot for nGrams = 2
+
+```{r messages=FALSE, warning = FALSE, echo=FALSE, cache=TRUE}
+# Top 30 Bigrams
+Freq.df <- head(data.frame(Words=names(BiGram.sorted), Frequency = BiGram.sorted), 30)
+p1 = ggplot(Freq.df, aes(x=reorder(Words, Frequency), y=Frequency)) + geom_bar(stat="identity") + coord_flip()
+# Add plot title & labels
+p1 = p1 + ggtitle("Top 30 Tokens - nGrams = 2") + 
+  xlab("") +
+  ylab("Token Frequency")
+# White background and black grid lines
+p1 <- p1 + theme_bw()
+print(p1)  
+```
+
+#### Histogram Plot for nGrams = 3
+
+```{r messages=FALSE, warning = FALSE, echo=FALSE, cache=TRUE}
+Freq.df <- head(data.frame(Words=names(TriGram.sorted), Frequency = TriGram.sorted), 30)
+p1 = ggplot(Freq.df, aes(x=reorder(Words, Frequency), y=Frequency)) + geom_bar(stat="identity") + coord_flip()
+# Add plot title & labels
+p1 = p1 + ggtitle("Top 30 Tokens - nGrams = 3") + 
+  xlab("") +
+  ylab("Token Frequency")
+# White background and black grid lines
+p1 <- p1 + theme_bw()
+print(p1)    
+```
+
+## Conclusion and Project Next Steps
+
+Tasks 0, 1 and 2 are complete. Dataset has been aquired and basic properties of the data are now known from initial Exploratory Data Analysis of a 5% Random Sample of the Dataset. Tasks 3 - 7 remain.
+
+Next steps are:
+
+<ul>
+<li> Perform additional Exploratory Data Analysis on larger Random Sample to validate an appropriate Sample Size.</li>
+<li> N-gram Exploration and Basic Language modeling for seen and un-seen n-grams</li>
+<li> Perform additional Creative Exploration</li>
+<li> Build a Data Product with Prediction Algo</li>
+<li> Build a Slide Deck to accompany Data Product</li>
+<li> Final Rollout Submission of Data Product in a Shiny App</li>
+</ul>
+
+## Appendix - R Code
+
+```{r eval=FALSE}
+############################################################
+# Capstone Project - Milestone Report
+# Data Scientist - Eric Bruce
+# Date Mar 2016
+# R 1.0
+#############################################################
+
+############################################################
+# Libraries
+############################################################
+library(stringr); library(stringi); library(R.utils)
+library(quanteda, warn.conflicts = FALSE, quietly=TRUE) 
+library(ggplot2, warn.conflicts = FALSE, quietly=TRUE)
+
+############################################################
+# Obtain Dataset
+############################################################
+
+# set wd & data/final dir - data source 
+setwd("~/R/DataScience-JohnsHopkins-Capstone")
+data.dir = ("~/R/DataScience-JohnsHopkins-Capstone/data/final")
+# download & unzip data if needed
+fileUrl <- "https://d396qusza40orc.cloudfront.net/dsscapstone/dataset/Coursera-SwiftKey.zip"
+if (!file.exists("./data/Coursera-SwiftKey.zip")){
+  download.file(fileUrl,destfile="./data/Coursera-SwiftKey.zip")
+  unzip(zipfile="./data/Coursera-SwiftKey.zip",exdir="./data")
+}
+
+############################################################
+# Load Data - Obtain File Info - File Content, Line Count & 
+# Word Count
+############################################################
+data.dir <- ("~/R/DataScience-JohnsHopkins-Capstone/data/final/en_US")
+file_list <- list.files(data.dir)
+
+file_size_in_MB <- c(file.info(paste(data.dir,file_list[1], sep="/"))$size / 1024^2,
+                     file.info(paste(data.dir,file_list[2], sep="/"))$size / 1024^2,
+                     file.info(paste(data.dir,file_list[3], sep="/"))$size / 1024^2)
+
+# Function to obtain line count from a file
+FileLineCount <- function(x) {
+  con <- file(x, "rb")
+  lc <- as.numeric(countLines(con))
+  close(con)
+  return(lc)
+}
+
+file_line_count <- c(FileLineCount(paste(data.dir,file_list[1], sep="/")),
+                     FileLineCount(paste(data.dir,file_list[2], sep="/")),
+                     FileLineCount(paste(data.dir,file_list[3], sep="/")))
+
+# Function to obtain word count from a file
+FileWordCount <- function(x, N) {
+  con <- file(x, "rb")
+  lst <- readLines(con, n=N, skipNul=TRUE, warn=FALSE)
+  lst <- gsub("[^[:alpha:][:space:]']", " ", lst)
+  lst <- gsub("â ", "'", lst)
+  lst <- gsub("ã", "'", lst)
+  lst <- gsub("ð", "'", lst)
+  lst <- Trim(clean(lst))
+  wc <- sum(stri_count_words(lst))
+  close(con)
+  return(wc)
+}
+
+file_word_count <- c(FileWordCount(paste(data.dir,file_list[1], sep="/"), file_line_count[1] ),
+                     FileWordCount(paste(data.dir,file_list[2], sep="/"), file_line_count[2] ),
+                     FileWordCount(paste(data.dir,file_list[3], sep="/"), file_line_count[3])
+                     )
+
+FileInfo <- data.frame(file_list,file_size_in_MB,file_line_count, file_word_count)
+
+############################################################
+# Sample Dataset 
+############################################################
+
+samplepct = 0.05
+# function to sample samplepct% of a file
+FileSample <- function(x, N, s) {
+  con <- file(x, "rb")
+  lst <- readLines(con, n=N, skipNul=TRUE, warn=FALSE)
+  close(con)
+  smpl <- sample(lst, N*s)
+  return(smpl)
+}
+
+set.seed(31416)
+blogs.sample <-FileSample(paste(data.dir,file_list[1], sep="/"), blogs.linecount, samplepct)
+news.sample <-FileSample(paste(data.dir,file_list[2], sep="/"), news.linecount, samplepct)
+twitter.sample <-FileSample(paste(data.dir,file_list[3], sep="/"), twitter.linecount, samplepct)
+
+############################################################
+# Data Cleaning, nGram Tokenize & TermDocumentMatrix
+############################################################
+
+# First step is to combine blogs, news and twitter into one document
+OneDoc <- (paste(blogs.sample, news.sample, twitter.sample))
+
+# Remove URLS from OneDoc
+OneDoc <- gsub('(f|ht)tp\\S+\\s*',"", OneDoc)
+
+# Construct Profane Words List
+fileUrl <- "http://www.cs.cmu.edu/~biglou/resources/bad-words.txt"
+if (!file.exists("~/R/DataScience-JohnsHopkins-Capstone/data/other/bad-words.txt")){
+  download.file(fileUrl,destfile="~/R/DataScience-JohnsHopkins-Capstone/data/other/bad-words.txt")
+}
+con <- file("~/R/DataScience-JohnsHopkins-Capstone/data/other/bad-words.txt", "r")
+profanewords <- readLines(con, n=1385, skipNul=TRUE, warn=FALSE) ; close(con)
+profanewords <- profanewords[profanewords != ""]
+
+# Remove Profane Words from OneDoc
+OneDoc <- removeWords(OneDoc, profanewords)
+
+# nGram Tokenize
+UniGram.tdm <- tokenize(toLower(OneDoc), 
+                        removePunct = TRUE, 
+                        removeNumbers = TRUE,
+                        removeTwitter = TRUE,
+                        ngrams = 1)
+
+BiGram.tdm <- tokenize(toLower(OneDoc), 
+                        removePunct = TRUE, 
+                        removeNumbers = TRUE,
+                        removeTwitter = TRUE,
+                        ngrams = 2)
+
+TriGram.tdm <- tokenize(toLower(OneDoc), 
+                        removePunct = TRUE, 
+                        removeNumbers = TRUE,
+                        removeTwitter = TRUE,
+                        ngrams = 3)
+
+# creating the document-feature matrix
+UniGram.dfm <- dfm(UniGram.tdm)
+BiGram.dfm <- dfm(BiGram.tdm)
+TriGram.dfm <- dfm(TriGram.tdm)
+
+############################################################
+# Exploratory Data Analysis
+############################################################
+
+# coercing the dfm into matrix.
+# docfreq will get the document frequency of a feature
+UniGram.df <- as.data.frame(as.matrix(docfreq(UniGram.dfm)))
+BiGram.df <- as.data.frame(as.matrix(docfreq(BiGram.dfm)))
+TriGram.df <- as.data.frame(as.matrix(docfreq(TriGram.dfm)))
+
+# sorting the n-grams for plotting
+UniGram.sorted <- sort(rowSums(UniGram.df), decreasing=TRUE)
+BiGram.sorted <- sort(rowSums(BiGram.df), decreasing=TRUE)
+TriGram.sorted <- sort(rowSums(TriGram.df), decreasing=TRUE)
+
+# Top 30 Unigrams
+Freq.df <- head(data.frame(Words=names(UniGram.sorted), Frequency = UniGram.sorted), 30)
+p1 = ggplot(Freq.df, aes(x=reorder(Words, Frequency), y=Frequency)) + geom_bar(stat="identity") + coord_flip()
+# Add plot title & labels
+p1 = p1 + ggtitle("Top 30 Tokens - nGrams = 1") + 
+  xlab("") +
+  ylab("Token Frequency")
+# White background and black grid lines
+p1 <- p1 + theme_bw()
+print(p1)  
+
+# Top 30 Bigrams
+Freq.df <- head(data.frame(Words=names(BiGram.sorted), Frequency = BiGram.sorted), 30)
+p1 = ggplot(Freq.df, aes(x=reorder(Words, Frequency), y=Frequency)) + geom_bar(stat="identity") + coord_flip()
+# Add plot title & labels
+p1 = p1 + ggtitle("Top 30 Tokens - nGrams = 2") + 
+  xlab("") +
+  ylab("Token Frequency")
+# White background and black grid lines
+p1 <- p1 + theme_bw()
+print(p1)  
+
+# Top 30 Trigrams
+Freq.df <- head(data.frame(Words=names(TriGram.sorted), Frequency = TriGram.sorted), 30)
+p1 = ggplot(Freq.df, aes(x=reorder(Words, Frequency), y=Frequency)) + geom_bar(stat="identity") + coord_flip()
+# Add plot title & labels
+p1 = p1 + ggtitle("Top 30 Tokens - nGrams = 3") + 
+  xlab("") +
+  ylab("Token Frequency")
+# White background and black grid lines
+p1 <- p1 + theme_bw()
+print(p1)  
+
+```
+
