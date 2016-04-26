@@ -5,3 +5,9 @@ The Data Product was developed for the Data Science Specialization Capstone thro
 
 ### Project Milestone Report
 The [Project Milestone Report](http://rpubs.com/ebrucecfa/DSC_MilestoneReport) covers Exploratory Data Analysis findings.
+
+### Project Product Pitch
+The [Project Product Pitch](http://rpubs.com/ebrucecfa/DSC_DataProductPitch) is a short 5 slide pitch to investors.
+
+### The Data Product
+The source code can be found in the 'DataProduct' folder.
