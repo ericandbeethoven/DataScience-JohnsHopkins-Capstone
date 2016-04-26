@@ -1,5 +1,5 @@
 ### DataScience-JohnsHopkins-Capstone
-This repository contains source code for an [NLP Predictive Text Model Data Product]((https://ebrucecfa.shinyapps.io/DSC_DataProduct).
+This repository contains source code for an [NLP Predictive Text Model Data Product](https://ebrucecfa.shinyapps.io/DSC_DataProduct).
 
 The Data Product was developed for the Data Science Specialization Capstone through The Johns Hopkins University and Coursera. It predicts the next word of an input phrase of 1 or more words using [Speech and Language Processing n-gram models](https://lagunita.stanford.edu/c4x/Engineering/CS-224N/asset/slp4.pdf).
 
