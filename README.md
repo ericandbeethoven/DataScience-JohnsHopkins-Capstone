@@ -10,4 +10,10 @@ The [Project Milestone Report](http://rpubs.com/ebrucecfa/DSC_MilestoneReport) c
 The [Project Product Pitch](http://rpubs.com/ebrucecfa/DSC_DataProductPitch) is a short 5 slide pitch to investors.
 
 ### The Data Product
-The source code can be found in the 'DataProduct' folder.
+The source code for the Data Product Shiny App can be found in the [DataProduct folder](https://github.com/ericandbeethoven/DataScience-JohnsHopkins-Capstone/tree/master/DataProduct).
+
+### The Shiny App in Action
+The [Data Product](https://ebrucecfa.shinyapps.io/DSC_DataProduct) can be taken for a test drive if you desire.
+
+### LinkedIn
+I certainly accept connection requests at my [LinkedIn profile](https://www.linkedin.com/in/ericbrucecfa)
